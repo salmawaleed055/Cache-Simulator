@@ -88,30 +88,30 @@ int getRandomInt(int max) {
 }
 
 // Memory generators
-unsigned int memGen1()
+unsigned int sequential_addresses()
 {
 
     static unsigned int addr = 0;
     return (addr++)%(DRAM_SIZE); // sequential addresses
 }
 
-unsigned int memGen2()
+unsigned int random_address_0_and_24KB()
 {
 
     return rand()%(24*1024); // random address between 0 and 24KB (-1)
 }
 
-unsigned int memGen3()
+unsigned int random_general_access()
 {
     return rand()%(DRAM_SIZE); // random address anywhere in DRAM size
 }
 
-unsigned int memGen4()
+unsigned int sequential_addresses_until_4KB()
 {
     return (addr_memGen4++)%(4*1024); // sequential addresses until 4 KB
 }
 
-unsigned int memGen5()
+unsigned int sequential_addresses_of_32B_until_1MB()
 {
     return (addr_memGen5+=32)%(64*16*1024); // sequential addresses in strides of 32B until 1MB
 }
@@ -367,7 +367,7 @@ public:
 
         bool all_in_range = true;
         for(int i = 0; i < 100; i++) {
-            unsigned int addr = memGen2();
+            unsigned int addr = random_address_0_and_24KB();
             if(addr >= 24*1024) {
                 all_in_range = false;
                 break;
@@ -533,7 +533,7 @@ int main() {
     cout << "  Iterations per test: 1,000,000\n\n";
 
     // Array of memory generators
-    unsigned int (*memGens[5])() = {memGen1, memGen2, memGen3, memGen4, memGen5};
+    unsigned int (*memGens[5])() = {sequential_addresses, random_address_0_and_24KB, random_general_access, sequential_addresses_until_4KB, sequential_addresses_of_32B_until_1MB};
     string genNames[5] = {"memGen1", "memGen2", "memGen3", "memGen4", "memGen5"};
 
     // L1 line sizes to test
