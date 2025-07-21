@@ -71,10 +71,6 @@ This simulator models a realistic two-level cache hierarchy found in modern proc
 - **RAM**: 1GB+ for comfortable execution
 - **Terminal**: Support for extended ASCII characters
 
-### Optional (for Python visualization)
-- **Python**: 3.7+
-- **Packages**: pandas, matplotlib, seaborn
-
 ##  Installation
 
 ### Method 1: Direct Compilation
