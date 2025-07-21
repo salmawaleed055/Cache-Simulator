@@ -72,28 +72,10 @@ This simulator models a realistic two-level cache hierarchy found in modern proc
 ##  Installation
 
 ### Method 1: Direct Compilation
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/cache-simulator.git
-cd cache-simulator
 
-# Compile with optimizations
-g++ -std=c++11 -O2 -o cache_simulator cache_simulator.cpp
 
-# Run the simulator
-./cache_simulator
-```
-
-### Method 2: Using CMake
-```bash
-mkdir build && cd build
-cmake ..
-make
-./cache_simulator
-```
-
-### Method 3: Windows (Visual Studio)
-1. Open `cache_simulator.cpp` in Visual Studio
+### Method 1: Windows (Visual Studio)
+1. Open `main.cpp` in Visual Studio
 2. Build in Release mode (Ctrl+Shift+B)
 3. Run the executable
 
@@ -270,7 +252,7 @@ This generates professional graphs:
 - **Hit Rate Analysis**
 - **Individual Pattern Analysis**
 
-## 🔬 Results Interpretation
+##  Results Interpretation
 
 ### Expected Performance Patterns
 
@@ -310,16 +292,14 @@ This generates professional graphs:
 
 ```
 cache-simulator/
-├── cache_simulator.cpp          # Main simulator source code
+├── main.cpp          # Main simulator source code
 ├── simulation_results.csv       # Generated results data
-├── cache_results.html          # Interactive HTML report
-├── analyze_cache_results.py    # Python visualization script
+├── grapher.py    # Python visualization script
 ├── README.md                   # This file
 ├── build/                      # Build directory (if using CMake)
 └── docs/                       # Additional documentation
-    ├── cache_architecture.md   # Cache design details
-    ├── memory_patterns.md      # Memory pattern analysis
-    └── performance_analysis.md # Results interpretation guide
+    ├── Report.pdf  # Cache design details
+    └── results.md # Results interpretation guide
 ```
 
 ### Key Components
@@ -336,10 +316,10 @@ cache-simulator/
 - **`cache_results.html`**: Interactive charts using Chart.js
 - **Console Output**: Immediate results and ASCII visualizations
 
-## 🎓 Academic Context
+## Academic Context
 
 ### Course Integration
-This simulator is designed for computer architecture courses covering:
+This simulator is designed for computer architecture organization and assembly covering:
 - **Cache Memory Systems**
 - **Memory Hierarchy Design** 
 - **Performance Analysis**
@@ -376,11 +356,5 @@ memGen1,16,1.9246,0.9375,0.8467,3.6478
 memGen1,32,1.6860,0.9687,0.7137,2.9646
 ...
 ```
-
-### HTML Features
-- **Interactive Charts**: Zoom, pan, toggle data series
-- **Responsive Design**: Works on mobile and desktop
-- **Export Options**: Save charts as images
-- **Real-time Data**: Updates with new simulation runs
 
 ## 
