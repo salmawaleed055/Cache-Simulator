@@ -1,3 +1,0 @@
-D:/Assembly/Assembly Project/Assembly_Project2_Summer-25/cmake-build-debug/CMakeFiles/Assembly_Project2_Summer_25.dir
-D:/Assembly/Assembly Project/Assembly_Project2_Summer-25/cmake-build-debug/CMakeFiles/edit_cache.dir
-D:/Assembly/Assembly Project/Assembly_Project2_Summer-25/cmake-build-debug/CMakeFiles/rebuild_cache.dir
