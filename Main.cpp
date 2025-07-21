@@ -6,7 +6,8 @@
 #include <climits>
 #include <vector>
 #include <fstream>
-#include <fstream>
+#include <cstdlib>
+#include <ctime>
 using namespace std;
 
 #define DRAM_SIZE (64*1024*1024) // 64 GB
@@ -25,6 +26,8 @@ using namespace std;
 
 int addr_memGen4 = 0;
 int addr_memGen5 = 0;
+
+
 
 enum cacheResType {MISS = 0, HIT = 1};
 
@@ -63,6 +66,7 @@ int L1_line_size = 32;  // Variable line size for L1
 unsigned int m_w = 0xABABAB55;
 unsigned int m_z = 0x05080902;
 
+
 void resetRNG() {
     m_w = 0xABABAB55;
     m_z = 0x05080902;
@@ -76,28 +80,30 @@ unsigned int rand_()
 }
 
 double getRandomDouble() {
-    return (double)rand_() / UINT_MAX; // random double between 0 and 1
+    return (double)rand() / RAND_MAX; // random double between 0 and 1
 }
 
 int getRandomInt(int max) {
-    return rand_() % max; // random int from 0 to max - 1
+    return rand() % max; // random int from 0 to max - 1
 }
 
 // Memory generators
 unsigned int memGen1()
 {
+
     static unsigned int addr = 0;
     return (addr++)%(DRAM_SIZE); // sequential addresses
 }
 
 unsigned int memGen2()
 {
-    return rand_()%(24*1024); // random address between 0 and 24KB (-1)
+
+    return rand()%(24*1024); // random address between 0 and 24KB (-1)
 }
 
 unsigned int memGen3()
 {
-    return rand_()%(DRAM_SIZE); // random address anywhere in DRAM size 
+    return rand()%(DRAM_SIZE); // random address anywhere in DRAM size
 }
 
 unsigned int memGen4()
@@ -504,6 +510,7 @@ void generateHTMLReport(SimResult results[][4], string genNames[], int lineSizes
     cout << "✓ Interactive HTML report generated: cache_results.html\n";
 }
 int main() {
+    srand(time(0));
     // Run tests first
     cout << "Two-Level Cache Performance Simulator\n";
     cout << "=====================================\n";
