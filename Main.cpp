@@ -5,15 +5,15 @@
 #include <string>
 #include <climits>
 #include <vector>
+#include <fstream>
 using namespace std;
 
-
-#define DRAM_SIZE (64*1024*1024)
+#define DRAM_SIZE (64*1024*1024) // 64 GB
 
 // Cache configuration constants
 #define L1_SIZE (16*1024)        // 16 KB
 #define L2_SIZE (128*1024)       // 128 KB
-#define L2_LINE_SIZE 64          // Fixed 64B for L2
+#define L2_LINE_SIZE 64          // 64B
 #define L1_ASSOCIATIVITY 4       // 4-way set associative
 #define L2_ASSOCIATIVITY 8       // 8-way set associative
 
@@ -22,7 +22,10 @@ using namespace std;
 #define L2_HIT_TIME 10
 #define DRAM_ACCESS_TIME 50
 
-enum cacheResType {MISS=0, HIT=1};
+int addr_memGen4 = 0;
+int addr_memGen5 = 0;
+
+enum cacheResType {MISS = 0, HIT = 1};
 
 // Cache line structure
 struct CacheLine {
@@ -35,11 +38,11 @@ struct CacheLine {
 
 // Cache structure
 struct Cache {
-    CacheLine** lines;
-    int sets;
-    int ways;
+    CacheLine** lines; // 2D array of cache lines
+    int sets; // number of sets
+    int ways; // associativity
     int line_size;
-    int set_bits;
+    int set_bits; // number of index bits
     int offset_bits;
 
     // Statistics
@@ -49,6 +52,7 @@ struct Cache {
 
     Cache() : lines(nullptr), hits(0), misses(0), write_backs(0) {}
 };
+
 
 // Global cache instances
 Cache L1_cache, L2_cache;
@@ -71,56 +75,45 @@ unsigned int rand_()
 }
 
 double getRandomDouble() {
-    return (double)rand_() / UINT_MAX;
+    return (double)rand_() / UINT_MAX; // random double between 0 and 1
 }
 
 int getRandomInt(int max) {
-    return rand_() % max;
+    return rand_() % max; // random int from 0 to max - 1
 }
 
 // Memory generators
 unsigned int memGen1()
 {
-    static unsigned int addr=0;
-    return (addr++)%(DRAM_SIZE);
+    static unsigned int addr = 0;
+    return (addr++)%(DRAM_SIZE); // sequential addresses
 }
 
 unsigned int memGen2()
 {
-    return rand_()%(24*1024);
+    return rand_()%(24*1024); // random address between 0 and 24KB (-1)
 }
 
 unsigned int memGen3()
 {
-    return rand_()%(DRAM_SIZE);
+    return rand_()%(DRAM_SIZE); // random address anywhere in DRAM size 
 }
 
 unsigned int memGen4()
 {
-    static unsigned int addr=0;
-    return (addr++)%(4*1024);
+    return (addr_memGen4++)%(4*1024); // sequential addresses until 4 KB
 }
 
 unsigned int memGen5()
 {
-    static unsigned int addr=0;
-    return (addr+=32)%(64*16*1024);
+    return (addr_memGen5+=32)%(64*16*1024); // sequential addresses in strides of 32B until 1MB
 }
 
-void resetMemGen() {
-    // Reset static variables in memory generators
-    // This is a bit hacky but necessary for consistent results
-    static bool first_call = true;
-    if (!first_call) {
-        // Reset static variables by calling each generator in a predictable way
-        for(int i = 0; i < 1000000; i++) {
-            memGen1();
-            memGen4();
-            memGen5();
-        }
-    }
-    first_call = false;
+void resetMemGen() { 
+    addr_memGen4 = 0;
+    addr_memGen5 = 0;
 }
+
 
 void initCache(Cache* cache, int size, int line_size, int ways) {
     cache->line_size = line_size;
@@ -152,6 +145,7 @@ void initCache(Cache* cache, int size, int line_size, int ways) {
     }
 }
 
+// deallocate cache memory
 void cleanupCache(Cache* cache) {
     if (cache->lines) {
         for (int i = 0; i < cache->sets; i++) {
@@ -162,15 +156,18 @@ void cleanupCache(Cache* cache) {
     }
 }
 
+// Extract tag from address
 unsigned int getTag(unsigned int addr, Cache* cache) {
     return addr >> (cache->offset_bits + cache->set_bits);
 }
 
+// Extract set index from address
 unsigned int getSet(unsigned int addr, Cache* cache) {
     unsigned int mask = (1 << cache->set_bits) - 1;
     return (addr >> cache->offset_bits) & mask;
 }
 
+// access cache and update hit/miss/writeback
 cacheResType accessCache(unsigned int addr, Cache* cache, bool is_write, bool& needs_write_back, unsigned int& wb_addr) {
     unsigned int set = getSet(addr, cache);
     unsigned int tag = getTag(addr, cache);
@@ -212,6 +209,7 @@ cacheResType accessCache(unsigned int addr, Cache* cache, bool is_write, bool& n
     return MISS;
 }
 
+// simulate a single memory access
 int simulateMemoryAccess(unsigned int addr, bool is_write) {
     int cycles = 0;
     bool l1_needs_wb = false, l2_needs_wb = false;
@@ -227,6 +225,8 @@ int simulateMemoryAccess(unsigned int addr, bool is_write) {
             // Write-back to L2
             bool dummy_wb;
             unsigned int dummy_addr;
+
+            // Write dirty L1 eviction to L2; if L2 evicts a dirty block, add DRAM access
             accessCache(l1_wb_addr, &L2_cache, true, dummy_wb, dummy_addr);
             cycles += L2_HIT_TIME;
             if (dummy_wb) {
@@ -271,9 +271,11 @@ struct SimResult {
     double avg_mem_access_time;
 };
 
+// Simulates 1M instructions using given memory generator and L1 line size; tracks cache hit rates and CPI
 SimResult runSimulation(unsigned int (*memGen)(), const string& genName, int lineSize) {
     // Reset for consistent results
     resetRNG();
+    resetMemGen();
 
     L1_line_size = lineSize;
 
@@ -324,21 +326,8 @@ SimResult runSimulation(unsigned int (*memGen)(), const string& genName, int lin
 
     return result;
 }
-// void generateSimpleGraph() {
-//     cout << "\nSimple ASCII Graph (CPI vs Line Size):\n";
-//     cout << "======================================\n";
-//
-//     string genNames[5] = {"Gen1", "Gen2", "Gen3", "Gen4", "Gen5"};
-//
-//     for(int gen = 0; gen < 5; gen++) {
-//         cout << genNames[gen] << ": ";
-//         for(int ls = 0; ls < 4; ls++) {
-//             int bars = (int)(results[gen][ls].cpi * 2); // Scale for display
-//             cout << string(min(bars, 20), '*') << " ";
-//         }
-//         cout << "\n";
-//     }
-// }
+
+
 class CacheSimulatorTester {
 public:
     static void testBasicCacheOperations() {
@@ -380,6 +369,7 @@ public:
         cout << "memGen2 range test: " << (all_in_range ? "✓ PASS" : "✗ FAIL") << "\n";
     }
 };
+
 class PerformanceValidator {
 public:
     static void validateResults(SimResult results[][4]) {
@@ -407,6 +397,25 @@ public:
         }
     }
 };
+
+void outputCSVResults(SimResult results[][4], string genNames[], int lineSizes[]) {
+    // Output CSV file for Python graphing
+    ofstream csvFile("simulation_results.csv");
+    csvFile << "Memory_Generator,Line_Size,CPI,L1_Hit_Rate,L2_Hit_Rate,Avg_Memory_Access_Time\n";
+
+    for (int genIdx = 0; genIdx < 5; genIdx++) {
+        for (int ls = 0; ls < 4; ls++) {
+            csvFile << genNames[genIdx] << ","
+                   << lineSizes[ls] << ","
+                   << fixed << setprecision(6) << results[genIdx][ls].cpi << ","
+                   << results[genIdx][ls].l1_hit_rate << ","
+                   << results[genIdx][ls].l2_hit_rate << ","
+                   << results[genIdx][ls].avg_mem_access_time << "\n";
+        }
+    }
+    csvFile.close();
+    cout << "\n✓ Results exported to simulation_results.csv\n";
+}
 
 int main() {
     // Run tests first
@@ -517,11 +526,7 @@ int main() {
         }
     }
 
-    // 🎯 Generate ASCII Graph
-    // generateSimpleGraph(results);
-
-    // 🎯 Validate results
     PerformanceValidator::validateResults(results);
-
-    return 0;  // 🎯 FIXED: This was the syntax error
+    outputCSVResults(results, genNames, lineSizes);
+    return 0; 
 }
