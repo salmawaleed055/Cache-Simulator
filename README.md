@@ -3,8 +3,6 @@
 A comprehensive cache hierarchy simulator that analyzes the impact of L1 cache line sizes on system performance across different memory access patterns.
 
 ![Cache Simulator](https://img.shields.io/badge/Language-C++-blue.svg)
-![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)
-![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 ## Table of Contents
 

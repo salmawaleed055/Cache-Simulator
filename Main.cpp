@@ -404,7 +404,7 @@ public:
         }
     }
 };
-// Add this function before main()
+
 void outputCSVResults(SimResult results[][4], string genNames[], int lineSizes[]) {
     // Output CSV file for Python graphing
     ofstream csvFile("simulation_results.csv");
