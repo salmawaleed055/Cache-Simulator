@@ -1,4 +1,4 @@
-//Cache Project
+    //Cache Project
 
 #include <iostream>
 #include <iomanip>
@@ -407,7 +407,7 @@ public:
 
 void outputCSVResults(SimResult results[][4], string genNames[], int lineSizes[]) {
     // Output CSV file for Python graphing
-    ofstream csvFile("simulation_results.csv");
+    ofstream csvFile("results/simulation_results5.csv");
     csvFile << "Memory_Generator,Line_Size,CPI,L1_Hit_Rate,L2_Hit_Rate,Avg_Memory_Access_Time\n";
 
     for (int genIdx = 0; genIdx < 5; genIdx++) {
