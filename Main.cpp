@@ -6,6 +6,7 @@
 #include <climits>
 #include <vector>
 #include <fstream>
+#include <fstream>
 using namespace std;
 
 #define DRAM_SIZE (64*1024*1024) // 64 GB
@@ -397,7 +398,7 @@ public:
         }
     }
 };
-
+// Add this function before main()
 void outputCSVResults(SimResult results[][4], string genNames[], int lineSizes[]) {
     // Output CSV file for Python graphing
     ofstream csvFile("simulation_results.csv");
@@ -417,6 +418,91 @@ void outputCSVResults(SimResult results[][4], string genNames[], int lineSizes[]
     cout << "\n✓ Results exported to simulation_results.csv\n";
 }
 
+void generateASCIIGraph(SimResult results[][4], string genNames[], int lineSizes[]) {
+    cout << "\n=== ASCII Performance Graph ===\n";
+    cout << "CPI vs Line Size (each * represents ~0.5 CPI)\n\n";
+
+    for(int gen = 0; gen < 5; gen++) {
+        cout << setw(12) << genNames[gen] << " | ";
+
+        for(int ls = 0; ls < 4; ls++) {
+            int stars = min((int)(results[gen][ls].cpi * 2), 50); // Scale to max 50 chars
+            cout << string(stars, '*') << " (" << lineSizes[ls] << "B) ";
+            if(ls < 3) cout << "\n" << string(15, ' '); // New line for readability
+        }
+        cout << "\n\n";
+    }
+}
+
+void generateSimpleChart(SimResult results[][4], string genNames[], int lineSizes[]) {
+    cout << "\n=== Performance Chart ===\n";
+    cout << "Generator    | 16B    | 32B    | 64B    | 128B   | Trend\n";
+    cout << string(60, '-') << "\n";
+
+    for(int gen = 0; gen < 5; gen++) {
+        cout << setw(12) << genNames[gen] << " | ";
+
+        for(int ls = 0; ls < 4; ls++) {
+            cout << setw(6) << fixed << setprecision(2) << results[gen][ls].cpi << " | ";
+        }
+
+        // Show trend
+        double improvement = ((results[gen][0].cpi - results[gen][3].cpi) / results[gen][0].cpi) * 100;
+        if(improvement > 5) cout << " [Down] BETTER";
+        else if(improvement < -5) cout << " [Down] WORSE";
+        else cout << "  STABLE";
+
+        cout << "\n";
+    }
+}
+void generateHTMLReport(SimResult results[][4], string genNames[], int lineSizes[]) {
+    ofstream htmlFile("cache_results.html");
+
+    htmlFile << "<!DOCTYPE html>\n<html>\n<head>\n";
+    htmlFile << "<title>Cache Performance Results</title>\n";
+    htmlFile << "<script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>\n";
+    htmlFile << "</head>\n<body>\n";
+    htmlFile << "<h1>Cache Performance Analysis</h1>\n";
+    htmlFile << "<canvas id=\"cpiChart\" width=\"800\" height=\"400\"></canvas>\n";
+
+    // JavaScript data
+    htmlFile << "<script>\n";
+    htmlFile << "const ctx = document.getElementById('cpiChart').getContext('2d');\n";
+    htmlFile << "const chart = new Chart(ctx, {\n";
+    htmlFile << "  type: 'line',\n";
+    htmlFile << "  data: {\n";
+    htmlFile << "    labels: [16, 32, 64, 128],\n";
+    htmlFile << "    datasets: [\n";
+
+    for(int gen = 0; gen < 5; gen++) {
+        htmlFile << "      {\n";
+        htmlFile << "        label: '" << genNames[gen] << "',\n";
+        htmlFile << "        data: [";
+        for(int ls = 0; ls < 4; ls++) {
+            htmlFile << results[gen][ls].cpi;
+            if(ls < 3) htmlFile << ", ";
+        }
+        htmlFile << "],\n";
+        htmlFile << "        borderColor: 'hsl(" << (gen * 60) << ", 70%, 50%)',\n";
+        htmlFile << "        fill: false\n";
+        htmlFile << "      }";
+        if(gen < 4) htmlFile << ",";
+        htmlFile << "\n";
+    }
+
+    htmlFile << "    ]\n  },\n";
+    htmlFile << "  options: {\n";
+    htmlFile << "    responsive: true,\n";
+    htmlFile << "    scales: {\n";
+    htmlFile << "      y: { type: 'logarithmic' }\n";
+    htmlFile << "    }\n";
+    htmlFile << "  }\n";
+    htmlFile << "});\n";
+    htmlFile << "</script>\n</body>\n</html>";
+
+    htmlFile.close();
+    cout << "✓ Interactive HTML report generated: cache_results.html\n";
+}
 int main() {
     // Run tests first
     cout << "Two-Level Cache Performance Simulator\n";
