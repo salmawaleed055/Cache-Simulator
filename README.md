@@ -103,7 +103,7 @@ make
 2. Build in Release mode (Ctrl+Shift+B)
 3. Run the executable
 
-## 🎮 Usage
+##  Usage
 
 ### Basic Execution
 ```bash
@@ -140,7 +140,7 @@ Testing memGen1:
   ...
 ```
 
-## ⚙️ Cache Configuration
+## Cache Configuration
 
 ### L1 Cache (Primary)
 - **Size**: 16KB
@@ -166,7 +166,7 @@ Testing memGen1:
 - **Replacement**: Random replacement algorithm
 - **Allocation**: Write-allocate on misses
 
-## 🔍 Memory Access Patterns
+##  Memory Access Patterns
 
 ### memGen1: Sequential Access
 ```cpp
@@ -240,7 +240,7 @@ CPI Results:
      memGen5      21.702      21.702      19.241      11.113
 ```
 
-## 📈 Visualization
+## Visualization
 
 ### ASCII Graphs (Built-in)
 ```
