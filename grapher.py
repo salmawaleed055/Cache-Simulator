@@ -10,21 +10,21 @@ def cpi_vs_line_size(results, output_folder, filename="default"):
     # plots graphs of cpi against line size for the different generators
     generators = results['Memory_Generator'].unique()
     line_sizes = sorted(results['Line_Size'].unique())
-    icon = mpimg.imread("graphs/bow.png")
+    # icon = mpimg.imread("graphs/bow.png")
 
     os.makedirs(output_folder, exist_ok=True)
 
     for generator in generators:
-        plt.figure(figsize= (10, 6), facecolor='#ffe6f0')
+        # plt.figure(figsize= (10, 6), facecolor='#ffe6f0')
         set = results[results['Memory_Generator'] == generator]
-        plt.plot(set['Line_Size'], set['CPI'], marker = 'x', label = generator, color = '#E75480')
-
-        for x, y in zip(set['Line_Size'], set['CPI']):
-            im = OffsetImage(icon, zoom=0.5)
-            ab = AnnotationBbox(im, (x, y), frameon=False, box_alignment=(0.5, 0.5))
-            plt.gca().add_artist(ab)
+        # plt.plot(set['Line_Size'], set['CPI'], marker = 'x', label = generator, color = '#E75480')
+        plt.plot(set['Line_Size'], set['CPI'], marker = 'x', label = generator)
 
 
+        # for x, y in zip(set['Line_Size'], set['CPI']):
+        #     im = OffsetImage(icon, zoom=0.5)
+        #     ab = AnnotationBbox(im, (x, y), frameon=False, box_alignment=(0.5, 0.5))
+        #     plt.gca().add_artist(ab)
 
         plt.title('CPI vs L1 Line Size')
         plt.xlabel('L1 Line Size (Bytes)')
@@ -39,7 +39,7 @@ def cpi_vs_line_size(results, output_folder, filename="default"):
         if filename == "default":
             path = os.path.join(output_folder, f"cpi_linesize_{generator}.png")
         else:
-            path = os.path.join(output_folder, f"averages/{filename}_{generator}.png")
+            path = os.path.join(output_folder, f"{filename}_{generator}.png")
 
         plt.savefig(path) 
         plt.close()
@@ -68,7 +68,7 @@ def main():
 
         # folder = "results"
         # averaged = average_cpi_vs_line_size(folder)
-        # cpi_vs_line_size(averaged, "graphs", "average")
+        # cpi_vs_line_size(averaged, "graphs/report_graphs", "average")
 
     except Exception as e:
         print(f"Error: {e}")

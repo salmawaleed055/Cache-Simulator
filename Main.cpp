@@ -407,7 +407,7 @@ public:
 
 void outputCSVResults(SimResult results[][4], string genNames[], int lineSizes[]) {
     // Output CSV file for Python graphing
-    ofstream csvFile("results/simulation_results5.csv");
+    ofstream csvFile("results/simulation_results1.csv");
     csvFile << "Memory_Generator,Line_Size,CPI,L1_Hit_Rate,L2_Hit_Rate,Avg_Memory_Access_Time\n";
 
     for (int genIdx = 0; genIdx < 5; genIdx++) {
@@ -421,7 +421,7 @@ void outputCSVResults(SimResult results[][4], string genNames[], int lineSizes[]
         }
     }
     csvFile.close();
-    cout << "\n✓ Results exported to simulation_results.csv\n";
+    cout << "\nResults exported to simulation_results1.csv\n";
 }
 
 void generateASCIIGraph(SimResult results[][4], string genNames[], int lineSizes[]) {
@@ -534,7 +534,7 @@ int main() {
 
     // Array of memory generators
     unsigned int (*memGens[5])() = {sequential_addresses, random_address_0_and_24KB, random_general_access, sequential_addresses_until_4KB, sequential_addresses_of_32B_until_1MB};
-    string genNames[5] = {"memGen1", "memGen2", "memGen3", "memGen4", "memGen5"};
+    string genNames[5] = {"Sequential", "Random till 24KB", "Random", "Sequential to 4KB", "Sequential 32B to 1MB"};
 
     // L1 line sizes to test
     int lineSizes[4] = {16, 32, 64, 128};
