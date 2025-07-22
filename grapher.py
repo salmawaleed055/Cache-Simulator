@@ -10,21 +10,21 @@ def cpi_vs_line_size(results, output_folder, filename="default"):
     # plots graphs of cpi against line size for the different generators
     generators = results['Memory_Generator'].unique()
     line_sizes = sorted(results['Line_Size'].unique())
-    # icon = mpimg.imread("graphs/bow.png")
+    icon = mpimg.imread("graphs/bow.png")
 
     os.makedirs(output_folder, exist_ok=True)
 
     for generator in generators:
-        # plt.figure(figsize= (10, 6), facecolor='#ffe6f0')
+        plt.figure(figsize= (10, 6), facecolor='#ffe6f0')
         set = results[results['Memory_Generator'] == generator]
-        # plt.plot(set['Line_Size'], set['CPI'], marker = 'x', label = generator, color = '#E75480')
+        plt.plot(set['Line_Size'], set['CPI'], marker = 'x', label = generator, color = '#E75480')
         plt.plot(set['Line_Size'], set['CPI'], marker = 'x', label = generator)
 
 
-        # for x, y in zip(set['Line_Size'], set['CPI']):
-        #     im = OffsetImage(icon, zoom=0.5)
-        #     ab = AnnotationBbox(im, (x, y), frameon=False, box_alignment=(0.5, 0.5))
-        #     plt.gca().add_artist(ab)
+        for x, y in zip(set['Line_Size'], set['CPI']):
+            im = OffsetImage(icon, zoom=0.5)
+            ab = AnnotationBbox(im, (x, y), frameon=False, box_alignment=(0.5, 0.5))
+            plt.gca().add_artist(ab)
 
         plt.title('CPI vs L1 Line Size')
         plt.xlabel('L1 Line Size (Bytes)')
@@ -60,11 +60,11 @@ def average_cpi_vs_line_size(folder):
 
 def main():
     try:
-        file = r"results/simulation_results5.csv"
+        file = r"simulation_results.csv"
 
         results = pd.read_csv(file)
 
-        cpi_vs_line_size(results, "graphs/data_5")
+        cpi_vs_line_size(results, "graphs")
 
         # folder = "results"
         # averaged = average_cpi_vs_line_size(folder)

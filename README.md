@@ -3,6 +3,7 @@
 A comprehensive cache hierarchy simulator that analyzes the impact of L1 cache line sizes on system performance across different memory access patterns.
 
 ![Cache Simulator](https://img.shields.io/badge/Language-C++-blue.svg)
+![Plotting](https://img.shields.io/badge/Visualization-Python-yellow.svg)
 
 ## Table of Contents
 
@@ -14,11 +15,10 @@ A comprehensive cache hierarchy simulator that analyzes the impact of L1 cache l
 - [Cache Configuration](#cache-configuration)
 - [Memory Access Patterns](#memory-access-patterns)
 - [Output Analysis](#output-analysis)
-- [Visualization](#visualization)
+- [Visualization](#python-visualization)
 - [Results Interpretation](#results-interpretation)
 - [Project Structure](#project-structure)
 - [Academic Context](#academic-context)
-- [Contributing](#contributing)
 
 ##  Overview
 
@@ -52,8 +52,6 @@ This simulator models a realistic two-level cache hierarchy found in modern proc
 - **Performance validation**
 - **Hit rate analysis** (L1 and L2)
 - **Multiple output formats**
-- **ASCII visualization**
-- **Statistical analysis**
 
 ##  System Requirements
 
@@ -61,24 +59,17 @@ This simulator models a realistic two-level cache hierarchy found in modern proc
 - **OS**: Windows 10, macOS 10.14+, or Linux
 - **Compiler**: GCC 7+, Clang 6+, or MSVC 2017+
 - **C++ Standard**: C++11 or later
-- **RAM**: 256MB available memory
-- **Storage**: 50MB free space
-
-### Recommended
-- **Compiler**: GCC 9+ or equivalent
-- **RAM**: 1GB+ for comfortable execution
-- **Terminal**: Support for extended ASCII characters
 
 ##  Installation
 
 ### Method 1: Direct Compilation
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/cache-simulator.git
-cd cache-simulator
+git clone https://github.com/salmawaleed055/Cache-Simulator
+cd Cache-Simulator
 
 # Compile with optimizations
-g++ -std=c++11 -O2 -o cache_simulator cache_simulator.cpp
+g++ -std=c++11 -O2 -o cache_simulator Main.cpp
 
 # Run the simulator
 ./cache_simulator
@@ -93,7 +84,7 @@ make
 ```
 
 ### Method 3: Windows (Visual Studio)
-1. Open `cache_simulator.cpp` in Visual Studio
+1. Open `Main.cpp` in Visual Studio
 2. Build in Release mode (Ctrl+Shift+B)
 3. Run the executable
 
@@ -105,9 +96,9 @@ make
 ```
 
 ### Expected Output Flow
-1. **Verification Tests** (~2 seconds)
+1. **Verification Tests** 
 2. **Configuration Display**
-3. **Simulation Execution** (~30-60 seconds)
+3. **Simulation Execution** 
    - 5 memory generators × 4 line sizes = 20 test runs
    - 1M instructions per test = 20M total instructions
 4. **Results Analysis and Visualization**
@@ -225,52 +216,32 @@ addr = 0, 32, 64, 96, 128, ... (stride = 32B)
 ```
 CPI Results:
 ============
-   Generator         16B         32B         64B        128B
-------------------------------------------------------------
-     memGen1       1.925       1.686       1.554       1.277
-     memGen2       3.065       3.064       3.067       3.052  
-     memGen3      32.451      32.445      32.479      32.494
-     memGen4       1.006       1.004       1.004       1.002
-     memGen5      21.702      21.702      19.241      11.113
+| Generator        | 16B    | 32B    | 64B    | 128B   |
+|------------------|--------|--------|--------|--------|
+| Sequential       | 1.925  | 1.686  | 1.554  | 1.277  |
+| Random 24KB      | 3.065  | 3.064  | 3.067  | 3.052  |
+| Random           | 32.451 | 32.445 | 32.479 | 32.494 |
+| Sequential 4KB   | 1.006  | 1.004  | 1.004  | 1.002  |
+| Sequential 1MB   | 21.702 | 21.702 | 19.241 | 11.113 |
 ```
 
-## Visualization
+## Python Visualization
 
-### ASCII Graphs (Built-in)
-```
-=== ASCII Performance Graph ===
-CPI vs Line Size (each * represents ~0.5 CPI)
+After generating the simulation results (`simulation_results.csv`), you can run the optional Python script to produce high-quality graphs for analysis.
 
-     memGen1 | *** (16B)  *** (32B)  *** (64B)  ** (128B)
-     memGen4 | ** (16B)   ** (32B)   ** (64B)   ** (128B)
-     memGen5 | *******************************************(16B)
-               ********************** (128B)
-```
+#### Requirements:
+- Python 3.7+
+- `matplotlib`
+- `pandas`
+- `numpy`
 
-### Performance Chart
-```
-Generator    | 16B    | 32B    | 64B    | 128B   | Trend
-------------------------------------------------------------
-     memGen1 |   1.92 |   1.69 |   1.55 |   1.28 |  DOWN BETTER
-     memGen2 |   3.06 |   3.06 |   3.07 |   3.05 |  -> STABLE
-     memGen5 |  21.70 |  21.70 |  19.24 |  11.11 |  DOWN BETTER
-```
-
-### Python Visualization (Optional)
-If you have Python with matplotlib installed:
-
+#### Run:
 ```bash
-# After running the simulator
-python3 analyze_cache_results.py
+python grapher.py
 ```
 
-This generates professional graphs:
-- **CPI vs Line Size** (log and linear scales)
-- **Performance Heatmap**
-- **Hit Rate Analysis**
-- **Individual Pattern Analysis**
 
-## 🔬 Results Interpretation
+## Results Interpretation
 
 ### Expected Performance Patterns
 
@@ -309,17 +280,13 @@ This generates professional graphs:
 ##  Project Structure
 
 ```
-cache-simulator/
-├── cache_simulator.cpp          # Main simulator source code
-├── simulation_results.csv       # Generated results data
-├── cache_results.html          # Interactive HTML report
-├── analyze_cache_results.py    # Python visualization script
+Cache-Simulator/
+├── main.cpp                    # Main simulator source code
+├── simulation_results.csv      # Generated results data
+├── grapher.py                  # Python visualization script
 ├── README.md                   # This file
 ├── build/                      # Build directory (if using CMake)
 └── docs/                       # Additional documentation
-    ├── cache_architecture.md   # Cache design details
-    ├── memory_patterns.md      # Memory pattern analysis
-    └── performance_analysis.md # Results interpretation guide
 ```
 
 ### Key Components
@@ -329,58 +296,18 @@ cache-simulator/
 - **Memory Generators**: 5 different access pattern functions
 - **Simulation Engine**: Main simulation loop and timing model
 - **Test Framework**: Automated verification and validation
-- **Output System**: Console, CSV, and HTML generation
+- **Output System**: Console and CSV
 
 #### Generated Files
 - **`simulation_results.csv`**: Raw data for external analysis
-- **`cache_results.html`**: Interactive charts using Chart.js
-- **Console Output**: Immediate results and ASCII visualizations
+- **Console Output**: Immediate results
 
-## 🎓 Academic Context
+## Academic Context
 
 ### Course Integration
-This simulator is designed for computer architecture courses covering:
+This simulator is designed for Computer Organization and Assembly, Summer 2025 for course project 2 covering:
 - **Cache Memory Systems**
 - **Memory Hierarchy Design** 
 - **Performance Analysis**
 - **Spatial and Temporal Locality**
 - **Cache Optimization Techniques**
-
-### Learning Objectives
-Students will understand:
-1. **Cache Hierarchy Operation**: How multi-level caches work together
-2. **Line Size Trade-offs**: Benefits and costs of larger cache lines
-3. **Access Pattern Impact**: How software affects hardware performance
-4. **Performance Metrics**: CPI analysis and optimization strategies
-5. **Design Space Exploration**: Systematic performance evaluation
-
-### Assignment Usage
-- **Data Collection**: 20 simulation runs (5 patterns × 4 line sizes)
-- **Analysis Report**: Graph interpretation and conclusions
-- **Performance Comparison**: Quantitative analysis of results
-- **Design Recommendations**: Cache optimization strategies
-
-##  Files Generated
-
-### Simulation Outputs
-| File | Format | Purpose | Size |
-|------|---------|---------|------|
-| `simulation_results.csv` | CSV | Python/Excel analysis | ~2KB |
-| `cache_results.html` | HTML | Interactive visualization | ~15KB |
-| Console output | Text | Immediate results | N/A |
-
-CSV Data Format
-```csv
-Generator,LineSize,CPI,L1_HitRate,L2_HitRate,AvgMemTime
-memGen1,16,1.9246,0.9375,0.8467,3.6478
-memGen1,32,1.6860,0.9687,0.7137,2.9646
-...
-```
-
-### HTML Features
-- **Interactive Charts**: Zoom, pan, toggle data series
-- **Responsive Design**: Works on mobile and desktop
-- **Export Options**: Save charts as images
-- **Real-time Data**: Updates with new simulation runs
-
-## 
