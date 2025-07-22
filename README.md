@@ -303,6 +303,7 @@ Cache-Simulator/
 - **Console Output**: Immediate results
 
 ## Academic Context
+## Academic Context
 
 ### Course Integration
 This simulator is designed for Computer Organization and Assembly, Summer 2025 for course project 2 covering:
